@@ -207,7 +207,7 @@ const ContactSection = () => {
 
           <TextElement delay={0.2}>
             <h1 className="text-4xl md:text-5xl font-light text-gray-800 mb-6 tracking-tight">
-              Let's Start a Conversation
+              Let&apos;s Start a Conversation
             </h1>
           </TextElement>
 
@@ -221,7 +221,7 @@ const ContactSection = () => {
 
           <TextElement delay={0.5}>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-10 leading-relaxed font-light tracking-wide">
-              Have a project in mind or want to discuss potential collaboration? I'm always open to new opportunities and interesting challenges.
+              Have a project in mind or want to discuss potential collaboration? I&apos;m always open to new opportunities and interesting challenges.
             </p>
           </TextElement>
         </div>
@@ -355,7 +355,7 @@ const ContactSection = () => {
 
               {submitStatus === 'success' && (
                 <div className="p-3 bg-green-100 text-green-700 rounded-lg text-sm flex justify-between items-center">
-                  <span>Message sent successfully! I'll get back to you soon.</span>
+                  <span>Message sent successfully! I&apos;ll get back to you soon.</span>
                   <button 
                     onClick={() => setSubmitStatus(null)}
                     className="text-green-800 hover:text-green-900 ml-2"
