@@ -9,7 +9,7 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import SendIcon from "@mui/icons-material/Send";
 import CloseIcon from "@mui/icons-material/Close";
 
-// Constants (unchanged from your original)
+// Constants
 const COLORS = {
   gray: { 600: "text-gray-600" },
 };
@@ -110,7 +110,7 @@ const ContactSection = () => {
     email: "",
     message: "",
     // Honeypot field - hidden from humans but visible to bots
-    lastName: "",
+    website: "",
   });
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -159,7 +159,7 @@ const ContactSection = () => {
     }
 
     // Honeypot validation - if this field is filled, it's likely a bot
-    if (formData.lastName.trim()) {
+    if (formData.website.trim() !== "") {
       newErrors.honeypot = "Spam detected";
     }
 
@@ -199,7 +199,7 @@ const ContactSection = () => {
       );
 
       setSubmitStatus("success");
-      setFormData({ name: "", email: "", message: "", lastName: "" });
+      setFormData({ name: "", email: "", message: "", website: "" });
     } catch (error) {
       console.error("Form submission failed:", error);
       setSubmitStatus("error");
@@ -258,14 +258,14 @@ const ContactSection = () => {
             GET IN TOUCH
           </TextElement>
 
-          <TextElement className="animate-fade-in-up">
+          <TextElement>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-light text-gray-900 mb-6 tracking-tight">
               Let&apos;s Start a{" "}
               <span className="text-gray-900">Conversation</span>
             </h1>
           </TextElement>
 
-          <TextElement className="animate-fade-in-up delay-100">
+          <TextElement>
             <h2 className="text-2xl md:text-3xl lg:text-4xl font-light text-gray-900 mb-8 tracking-normal">
               Contact Me
             </h2>
@@ -273,7 +273,7 @@ const ContactSection = () => {
 
           <LineReveal />
 
-          <TextElement className="animate-fade-in-up delay-200">
+          <TextElement>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-10 leading-relaxed font-light">
               Have a project in mind or want to discuss potential collaboration?
               I&apos;m always open to new opportunities and interesting
@@ -284,7 +284,7 @@ const ContactSection = () => {
 
         <div className="grid md:grid-cols-2 gap-12 md:gap-16">
           <div className="space-y-2 md:space-y-4">
-            <div className="animate-fade-in-right delay-300">
+            <div>
               <ContactItem
                 icon={<EmailIcon sx={{ fontSize: 20, color: "white" }} />}
                 title="Email"
@@ -295,7 +295,7 @@ const ContactSection = () => {
               />
             </div>
 
-            <div className="animate-fade-in-right delay-400">
+            <div>
               <ContactItem
                 icon={<WhatsAppIcon sx={{ fontSize: 20, color: "white" }} />}
                 title="WhatsApp"
@@ -306,7 +306,7 @@ const ContactSection = () => {
               />
             </div>
 
-            <div className="animate-fade-in-right delay-500">
+            <div>
               <ContactItem
                 icon={<PeopleIcon sx={{ fontSize: 20, color: "white" }} />}
                 title="Availability"
@@ -316,7 +316,7 @@ const ContactSection = () => {
               />
             </div>
 
-            <div className="animate-fade-in-right delay-600">
+            <div>
               <ContactItem
                 icon={<AccessTimeIcon sx={{ fontSize: 20, color: "white" }} />}
                 title="Response Time"
@@ -327,7 +327,7 @@ const ContactSection = () => {
             </div>
           </div>
 
-          <div id="contact-form" className="animate-fade-in-left delay-300">
+          <div id="contact-form">
             <form
               ref={formRef}
               onSubmit={handleSubmit}
@@ -357,24 +357,24 @@ const ContactSection = () => {
                   placeholder="Your name"
                 />
                 {errors.name && (
-                  <p className="mt-1 text-sm text-red-600 animate-fade-in">
+                  <p className="mt-1 text-sm text-red-600">
                     {errors.name}
                   </p>
                 )}
               </div>
 
               {/* Honeypot field - hidden from humans but visible to bots */}
-              <div className="absolute left-[-9999px]" aria-hidden="true">
-                <label htmlFor="lastName">Last Name</label>
+              <div className="hidden">
+                <label htmlFor="website">Website</label>
                 <input
                   type="text"
-                  id="lastName"
-                  name="lastName"
-                  value={formData.lastName}
+                  id="website"
+                  name="website"
+                  value={formData.website}
                   onChange={handleChange}
                   tabIndex="-1"
                   autoComplete="off"
-                  placeholder="Your last name"
+                  placeholder="Your website"
                 />
               </div>
 
@@ -402,7 +402,7 @@ const ContactSection = () => {
                   placeholder="your.email@example.com"
                 />
                 {errors.email && (
-                  <p className="mt-1 text-sm text-red-600 animate-fade-in">
+                  <p className="mt-1 text-sm text-red-600">
                     {errors.email}
                   </p>
                 )}
@@ -432,7 +432,7 @@ const ContactSection = () => {
                   placeholder="Tell me about your project..."
                 />
                 {errors.message && (
-                  <p className="mt-1 text-sm text-red-600 animate-fade-in">
+                  <p className="mt-1 text-sm text-red-600">
                     {errors.message}
                   </p>
                 )}
@@ -446,7 +446,7 @@ const ContactSection = () => {
 
               {submitStatus === "success" && (
                 <div
-                  className={`p-4 bg-green-100 text-green-700 ${BORDERS.radius.md} text-sm flex justify-between items-center animate-fade-in`}
+                  className={`p-4 bg-green-100 text-green-700 ${BORDERS.radius.md} text-sm flex justify-between items-center`}
                 >
                   <span>
                     Message sent successfully! I&apos;ll get back to you soon.
@@ -463,7 +463,7 @@ const ContactSection = () => {
 
               {submitStatus === "error" && (
                 <div
-                  className={`p-4 bg-red-100 text-red-700 ${BORDERS.radius.md} text-sm flex justify-between items-center animate-fade-in`}
+                  className={`p-4 bg-red-100 text-red-700 ${BORDERS.radius.md} text-sm flex justify-between items-center`}
                 >
                   <span>
                     There was an error sending your message. Please try again or
@@ -574,44 +574,6 @@ const ContactSection = () => {
             transform: translateY(-8px) rotate(2deg);
           }
         }
-        @keyframes fade-in {
-          from {
-            opacity: 0;
-          }
-          to {
-            opacity: 1;
-          }
-        }
-        @keyframes fade-in-up {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        @keyframes fade-in-right {
-          from {
-            opacity: 0;
-            transform: translateX(-20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateX(0);
-          }
-        }
-        @keyframes fade-in-left {
-          from {
-            opacity: 0;
-            transform: translateX(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateX(0);
-          }
-        }
         .animate-shake {
           animation: shake 0.5s ease-in-out;
         }
@@ -623,39 +585,6 @@ const ContactSection = () => {
         }
         .animate-float-fast {
           animation: float-fast 7s ease-in-out infinite;
-        }
-        .animate-fade-in {
-          animation: fade-in 0.5s ease-out forwards;
-        }
-        .animate-fade-in-up {
-          opacity: 0;
-          animation: fade-in-up 0.6s ease-out forwards;
-        }
-        .animate-fade-in-right {
-          opacity: 0;
-          animation: fade-in-right 0.6s ease-out forwards;
-        }
-        .animate-fade-in-left {
-          opacity: 0;
-          animation: fade-in-left 0.6s ease-out forwards;
-        }
-        .delay-100 {
-          animation-delay: 0.1s;
-        }
-        .delay-200 {
-          animation-delay: 0.2s;
-        }
-        .delay-300 {
-          animation-delay: 0.3s;
-        }
-        .delay-400 {
-          animation-delay: 0.4s;
-        }
-        .delay-500 {
-          animation-delay: 0.5s;
-        }
-        .delay-600 {
-          animation-delay: 0.6s;
         }
       `}</style>
     </section>
