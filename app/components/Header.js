@@ -1,18 +1,39 @@
 // app/components/Header.js
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import Link from 'next/link';
+import MenuIcon from '@mui/icons-material/Menu';
+import CloseIcon from '@mui/icons-material/Close';
+import {
+  ANIMATIONS,
+  GRADIENTS
+} from '../constants';
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const mobileMenuRef = useRef(null);
 
   useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 10);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 10);
+      setMobileMenuOpen(false);
+    };
+
+    const handleClickOutside = (event) => {
+      if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target)) {
+        setMobileMenuOpen(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, []);
 
   const navItems = [
@@ -22,15 +43,30 @@ const Header = () => {
     { name: 'Contact', href: '#contact' },
   ];
 
+  // Smooth scroll function
+  const handleSmoothScroll = (e, href) => {
+    e.preventDefault();
+    if (href === '#home') {
+      // Scroll to very top
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      const target = document.querySelector(href);
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+    setMobileMenuOpen(false);
+  };
+
   return (
     <motion.header
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.5, ease: 'easeOut' }}
-      className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
+      className={`fixed top-0 left-0 w-full z-50 ${ANIMATIONS.transitions.default} ${
         isScrolled
           ? 'bg-white/90 backdrop-blur-md shadow-lg'
-          : 'bg-transparent'
+          : 'bg-white/20 backdrop-blur-md'
       }`}
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -41,12 +77,14 @@ const Header = () => {
             whileTap={{ scale: 0.95 }}
             className="flex items-center"
           >
-            <Link
-              href="#"
-              className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"
+            <a
+              href="#home"
+              onClick={(e) => handleSmoothScroll(e, '#home')}
+              className={`text-2xl font-bold ${GRADIENTS.blue} bg-clip-text text-transparent`}
+              aria-label="Home"
             >
               mibrahim.code
-            </Link>
+            </a>
           </motion.div>
 
           {/* Desktop Nav */}
@@ -58,13 +96,14 @@ const Header = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: index * 0.1 }}
               >
-                <Link
+                <a
                   href={item.href}
-                  className="relative text-gray-700 hover:text-blue-600 font-medium transition-colors duration-300 group"
+                  onClick={(e) => handleSmoothScroll(e, item.href)}
+                  className={`relative text-gray-700 hover:text-blue-600 font-medium ${ANIMATIONS.transitions.default} group`}
                 >
                   {item.name}
                   <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
-                </Link>
+                </a>
               </motion.div>
             ))}
           </nav>
@@ -75,39 +114,21 @@ const Header = () => {
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="ml-4 text-gray-700 hover:text-blue-600 focus:outline-none"
               aria-label="Toggle menu"
+              aria-expanded={mobileMenuOpen}
             >
-              <svg
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                {mobileMenuOpen ? (
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                ) : (
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 6h16M4 12h16M4 18h16"
-                  />
-                )}
-              </svg>
+              {mobileMenuOpen ? <CloseIcon /> : <MenuIcon />}
             </button>
           </div>
         </div>
 
         {/* Mobile nav */}
         <motion.div
+          ref={mobileMenuRef}
           initial={false}
           animate={mobileMenuOpen ? { height: 'auto', opacity: 1 } : { height: 0, opacity: 0 }}
           transition={{ duration: 0.3 }}
-          className="md:hidden overflow-hidden"
+          className="md:hidden overflow-hidden bg-white/90 backdrop-blur-md rounded-lg mt-2"
+          style={{ display: mobileMenuOpen ? 'block' : 'none' }}
         >
           <nav className="pb-4 space-y-3">
             {navItems.map((item, index) => (
@@ -117,13 +138,13 @@ const Header = () => {
                 animate={mobileMenuOpen ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
                 transition={{ duration: 0.3, delay: index * 0.1 }}
               >
-                <Link
+                <a
                   href={item.href}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="block py-2 text-gray-700 hover:text-blue-600 font-medium transition-colors duration-300"
+                  onClick={(e) => handleSmoothScroll(e, item.href)}
+                  className={`block py-2 text-gray-700 hover:text-blue-600 font-medium ${ANIMATIONS.transitions.default} px-4`}
                 >
                   {item.name}
-                </Link>
+                </a>
               </motion.div>
             ))}
           </nav>
