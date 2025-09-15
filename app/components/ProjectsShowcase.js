@@ -2,8 +2,8 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
-import { motion } from "framer-motion";
+import { useCallback, useMemo, useRef } from "react";
+import { motion, useInView } from "framer-motion";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import {
   COLORS,
@@ -16,9 +16,10 @@ import {
 } from "../constants";
 
 const ProjectShowcase = () => {
-  const [activeProject, setActiveProject] = useState(0);
+  const sectionRef = useRef(null);
+  const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
 
-  const projects = [
+  const projects = useMemo(() => [
     {
       id: 1,
       title: "Rawdhat's ChildCare Portal Website",
@@ -52,17 +53,12 @@ const ProjectShowcase = () => {
       liveUrl: "#",
       githubUrl: "#",
     },
-  ];
+  ], []);
 
-  const ProjectCard = ({ project, index }) => {
+  const ProjectCard = useCallback(({ project, index }) => {
     return (
       <div
-        onMouseEnter={() => setActiveProject(index)}
-        className={`relative p-4 sm:p-6 rounded-3xl border-2 transition-all duration-500 cursor-pointer group flex flex-col h-full ${
-          activeProject === index
-            ? "border-gray-300 bg-white shadow-lg md:shadow-2xl"
-            : "border-gray-100 bg-gray-50/50 hover:border-gray-200"
-        }`}
+        className={`relative p-4 sm:p-6 rounded-3xl border-2 transition-all duration-500 cursor-pointer group flex flex-col h-full border-gray-100 bg-gray-50/50 hover:border-gray-300 hover:bg-white hover:shadow-lg md:hover:shadow-2xl`}
       >
         {/* Project Image with Overlay */}
         <div className="relative h-48 sm:h-60 w-full mb-4 sm:mb-6 rounded-2xl overflow-hidden">
@@ -87,9 +83,7 @@ const ProjectShowcase = () => {
 
         <div className="p-1 sm:p-2 flex flex-col flex-grow">
           <h3
-            className={`text-xl sm:text-2xl font-semibold mb-3 sm:mb-4 transition-colors duration-500 ${
-              activeProject === index ? "text-gray-900" : "text-gray-800"
-            }`}
+            className={`text-xl sm:text-2xl font-semibold mb-3 sm:mb-4 transition-colors duration-500 group-hover:text-gray-900 text-gray-800`}
           >
             {project.title}
           </h3>
@@ -133,19 +127,16 @@ const ProjectShowcase = () => {
         </div>
 
         <div
-          className={`absolute inset-0 rounded-3xl border-2 pointer-events-none transition-all duration-300 ${
-            activeProject === index
-              ? "border-blue-200/50 opacity-100 scale-100"
-              : "border-transparent opacity-0 scale-95"
-          }`}
+          className={`absolute inset-0 rounded-3xl border-2 pointer-events-none transition-all duration-300 border-blue-200/50 opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100`}
         />
       </div>
     );
-  };
+  }, []);
 
   return (
     <section
       id="projects"
+      ref={sectionRef}
       className="relative py-20 sm:py-32 bg-white overflow-hidden"
     >
       {/* Background grid + blur */}
@@ -159,9 +150,8 @@ const ProjectShowcase = () => {
         <div className="text-center mb-16 sm:mb-24">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.8 }}
-            viewport={{ once: true, margin: "-100px" }}
             className={`inline-flex items-center ${BORDERS.radius.full} bg-gradient-to-r from-gray-100 to-blue-50 px-4 py-2 text-xs mb-8 md:mb-12 tracking-wide border border-gray-200`}
             style={{ color: COLORS.gray[600] }}
           >
@@ -172,21 +162,43 @@ const ProjectShowcase = () => {
             FEATURED WORK
           </motion.div>
 
-          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light text-gray-900 mb-6 sm:mb-8 tracking-tight">
+          <motion.h2 
+            initial={{ opacity: 0, y: 30 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.8, delay: 0.1 }}
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light text-gray-900 mb-6 sm:mb-8 tracking-tight"
+          >
             Crafting Digital Excellence
-          </h2>
+          </motion.h2>
 
-          <div className="h-0.5 bg-gradient-to-r from-transparent via-gray-300 to-transparent mx-auto my-8 sm:my-12 w-32 sm:w-48" />
+          <motion.div 
+            initial={{ width: 0 }}
+            animate={isInView ? { width: '128px' } : {}}
+            transition={{ duration: 1.2, delay: 0.2 }}
+            className="h-0.5 bg-gradient-to-r from-transparent via-gray-300 to-transparent mx-auto my-8 sm:my-12 sm:w-48"
+          />
 
-          <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed font-light px-4">
+          <motion.p 
+            initial={{ opacity: 0, y: 30 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed font-light px-4"
+          >
             Each project represents a unique challenge solved with precision and
             creativity
-          </p>
+          </motion.p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           {projects.map((project, index) => (
-            <ProjectCard key={project.id} project={project} index={index} />
+            <motion.div
+              key={project.id}
+              initial={{ opacity: 0, y: 50 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.8, delay: index * 0.15 }}
+            >
+              <ProjectCard project={project} index={index} />
+            </motion.div>
           ))}
         </div>
       </div>
