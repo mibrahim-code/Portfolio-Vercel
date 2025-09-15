@@ -122,6 +122,17 @@ const ContactSection = () => {
     setMounted(true);
   }, []);
 
+  // Auto-dismiss messages after 10 seconds
+  useEffect(() => {
+    if (submitStatus) {
+      const timer = setTimeout(() => {
+        setSubmitStatus(null);
+      }, 10000); // 10 seconds
+
+      return () => clearTimeout(timer);
+    }
+  }, [submitStatus]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
