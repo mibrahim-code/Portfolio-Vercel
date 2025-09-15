@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
+import Image from 'next/image';
 import {
   ANIMATIONS,
   GRADIENTS
@@ -113,10 +114,21 @@ const Header = () => {
             <a
               href="#home"
               onClick={scrollToTop}
-              className={`text-2xl font-bold ${GRADIENTS.blue} bg-clip-text text-transparent`}
+              className="flex items-center"
               aria-label="Home"
             >
-              mibrahim.code
+              {/* Logo Image */}
+              <div className="mr-2 relative w-8 h-8">
+                <Image
+                  src="/images/mibrahimcodelogo.png"
+                  alt="mibrahim.code logo"
+                  fill
+                  className="object-contain"
+                />
+              </div>
+              <span className={`text-2xl font-bold ${GRADIENTS.blue} bg-clip-text text-transparent`}>
+                mibrahim.code
+              </span>
             </a>
           </motion.div>
 
