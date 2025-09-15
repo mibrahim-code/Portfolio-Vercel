@@ -1,10 +1,10 @@
 // app/components/ProjectShowcase.js
-'use client';
+"use client";
 
-import Image from 'next/image';
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import GitHubIcon from '@mui/icons-material/GitHub';
+import Image from "next/image";
+import { useState } from "react";
+import { motion } from "framer-motion";
+import GitHubIcon from "@mui/icons-material/GitHub";
 import {
   COLORS,
   TYPOGRAPHY,
@@ -13,7 +13,7 @@ import {
   SHADOWS,
   ANIMATIONS,
   GRADIENTS,
-} from '../constants';
+} from "../constants";
 
 const ProjectShowcase = () => {
   const [activeProject, setActiveProject] = useState(0);
@@ -22,7 +22,7 @@ const ProjectShowcase = () => {
     {
       id: 1,
       title: "Rawdhat's ChildCare Portal Website",
-      category: "Education",
+      category: "Web Development",
       description:
         "A safe and educational environment for your children, guided by local professionals. Child care management software that makes families & teachers happier. Rawdhat manages Billing, Attendance, Registration, Communication, Paperwork, Payroll, and more for child care programs.",
       tech: ["React", "Next.js", "Tailwind", "Node.js"],
@@ -32,14 +32,14 @@ const ProjectShowcase = () => {
     },
     {
       id: 2,
-      title: "MediCare Hub",
-      category: "Healthcare",
+      title: "Arooj Cybersecurity & AI Solutions",
+      category: "Web Development",
       description:
-        "A comprehensive healthcare management system with patient portals, appointment scheduling, and telehealth capabilities.",
-      tech: ["Vue", "TypeScript", "Firebase", "Tailwind"],
-      image: "/images/placeholder-2.jpg",
-      liveUrl: "#",
-      githubUrl: "#",
+        "A professional website built for a Saudi-based software house specializing in cybersecurity and AI solutions. Designed with a modern UI, service sections, testimonials, and blog integration to showcase their expertise.",
+      tech: ["Next.js", "Tailwind CSS", "Node.js"],
+      image: "/images/aroojsolution.jpg",
+      liveUrl: "https://hadnat.site/",
+      githubUrl: "https://github.com/mibrahim-code/Arooj-Solutions",
     },
     {
       id: 3,
@@ -59,9 +59,9 @@ const ProjectShowcase = () => {
       <div
         onMouseEnter={() => setActiveProject(index)}
         className={`relative p-4 sm:p-6 rounded-3xl border-2 transition-all duration-500 cursor-pointer group flex flex-col h-full ${
-          activeProject === index 
-            ? 'border-gray-300 bg-white shadow-lg md:shadow-2xl' 
-            : 'border-gray-100 bg-gray-50/50 hover:border-gray-200'
+          activeProject === index
+            ? "border-gray-300 bg-white shadow-lg md:shadow-2xl"
+            : "border-gray-100 bg-gray-50/50 hover:border-gray-200"
         }`}
       >
         {/* Project Image with Overlay */}
@@ -74,7 +74,7 @@ const ProjectShowcase = () => {
             className="object-cover group-hover:scale-105 transition-transform duration-700"
             priority={index === 0}
             onError={(e) => {
-              e.currentTarget.src = '/images/placeholder.jpg';
+              e.currentTarget.src = "/images/placeholder.jpg";
             }}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -84,18 +84,20 @@ const ProjectShowcase = () => {
             </span>
           </div>
         </div>
-        
+
         <div className="p-1 sm:p-2 flex flex-col flex-grow">
-          <h3 className={`text-xl sm:text-2xl font-semibold mb-3 sm:mb-4 transition-colors duration-500 ${
-            activeProject === index ? 'text-gray-900' : 'text-gray-800'
-          }`}>
+          <h3
+            className={`text-xl sm:text-2xl font-semibold mb-3 sm:mb-4 transition-colors duration-500 ${
+              activeProject === index ? "text-gray-900" : "text-gray-800"
+            }`}
+          >
             {project.title}
           </h3>
-          
+
           <p className="text-gray-600 mb-4 sm:mb-6 leading-relaxed text-base sm:text-lg font-light flex-grow">
             {project.description}
           </p>
-          
+
           <div className="mt-auto">
             <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-4 sm:mb-6">
               {project.tech.map((tech, i) => (
@@ -107,7 +109,7 @@ const ProjectShowcase = () => {
                 </span>
               ))}
             </div>
-            
+
             <div className="flex gap-3 sm:gap-4">
               <a
                 href={project.liveUrl}
@@ -130,15 +132,22 @@ const ProjectShowcase = () => {
           </div>
         </div>
 
-        <div className={`absolute inset-0 rounded-3xl border-2 pointer-events-none transition-all duration-300 ${
-          activeProject === index ? 'border-blue-200/50 opacity-100 scale-100' : 'border-transparent opacity-0 scale-95'
-        }`} />
+        <div
+          className={`absolute inset-0 rounded-3xl border-2 pointer-events-none transition-all duration-300 ${
+            activeProject === index
+              ? "border-blue-200/50 opacity-100 scale-100"
+              : "border-transparent opacity-0 scale-95"
+          }`}
+        />
       </div>
     );
   };
 
   return (
-    <section id="projects" className="relative py-20 sm:py-32 bg-white overflow-hidden">
+    <section
+      id="projects"
+      className="relative py-20 sm:py-32 bg-white overflow-hidden"
+    >
       {/* Background grid + blur */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#fafafa_1px,transparent_1px),linear-gradient(to_bottom,#fafafa_1px,transparent_1px)] bg-[size:4rem_4rem] sm:bg-[size:6rem_6rem] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_40%,transparent_100%)] opacity-20" />
@@ -148,7 +157,7 @@ const ProjectShowcase = () => {
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
         <div className="text-center mb-16 sm:mb-24">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
@@ -170,7 +179,8 @@ const ProjectShowcase = () => {
           <div className="h-0.5 bg-gradient-to-r from-transparent via-gray-300 to-transparent mx-auto my-8 sm:my-12 w-32 sm:w-48" />
 
           <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed font-light px-4">
-            Each project represents a unique challenge solved with precision and creativity
+            Each project represents a unique challenge solved with precision and
+            creativity
           </p>
         </div>
 

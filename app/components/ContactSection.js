@@ -8,15 +8,30 @@ import PeopleIcon from "@mui/icons-material/People";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import SendIcon from "@mui/icons-material/Send";
 import CloseIcon from "@mui/icons-material/Close";
-import {
-  COLORS,
-  TYPOGRAPHY,
-  SPACING,
-  BORDERS,
-  SHADOWS,
-  ANIMATIONS,
-  GRADIENTS,
-} from "../constants";
+
+// Constants (unchanged from your original)
+const COLORS = {
+  gray: { 600: "text-gray-600" },
+};
+const BORDERS = {
+  radius: {
+    full: "rounded-full",
+    md: "rounded-md",
+    lg: "rounded-lg",
+  },
+};
+const SHADOWS = {
+  md: "shadow-md",
+};
+const SPACING = {
+  section: {
+    py: "py-20",
+    mb: "mb-16",
+  },
+  element: {
+    p: "p-6",
+  },
+};
 
 // Custom animated contact item component with enhanced effects
 const ContactItem = ({
@@ -94,64 +109,18 @@ const ContactSection = () => {
     name: "",
     email: "",
     message: "",
+    // Honeypot field - hidden from humans but visible to bots
+    lastName: "",
   });
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null);
-  const [recaptchaToken, setRecaptchaToken] = useState(null);
   const formRef = useRef();
-  const recaptchaRef = useRef();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-
-    // Load reCAPTCHA script
-    const script = document.createElement("script");
-    script.src = "https://www.google.com/recaptcha/api.js";
-    script.async = true;
-    script.defer = true;
-    document.body.appendChild(script);
-
-    // Initialize reCAPTCHA after script loads
-    script.onload = () => {
-      if (window.grecaptcha) {
-        window.grecaptcha.ready(() => {
-          if (recaptchaRef.current && !recaptchaRef.current.hasChildNodes()) {
-            try {
-              window.grecaptcha.render(recaptchaRef.current, {
-                sitekey: "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI",
-                callback: (token) => {
-                  setRecaptchaToken(token);
-                  if (errors.recaptcha) {
-                    setErrors((prev) => ({ ...prev, recaptcha: "" }));
-                  }
-                },
-                "expired-callback": () => {
-                  setRecaptchaToken(null);
-                },
-              });
-            } catch (error) {
-              console.log("reCAPTCHA error:", error);
-            }
-          }
-        });
-      }
-    };
-
-    // Set up timer to clear status messages
-    let timer;
-    if (submitStatus) {
-      timer = setTimeout(() => {
-        setSubmitStatus(null);
-      }, 15000);
-    }
-
-    return () => {
-      if (timer) clearTimeout(timer);
-      if (script) document.body.removeChild(script);
-    };
-  }, [submitStatus, errors]);
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -189,9 +158,9 @@ const ContactSection = () => {
       newErrors.message = "Message is required";
     }
 
-    // reCAPTCHA validation
-    if (!recaptchaToken) {
-      newErrors.recaptcha = "Please verify you are not a robot";
+    // Honeypot validation - if this field is filled, it's likely a bot
+    if (formData.lastName.trim()) {
+      newErrors.honeypot = "Spam detected";
     }
 
     setErrors(newErrors);
@@ -217,27 +186,22 @@ const ContactSection = () => {
       // Using dynamic import for emailjs to reduce initial bundle size
       const emailjs = (await import("@emailjs/browser")).default;
 
+      // Send form data to EmailJS (without recaptcha token)
       await emailjs.send(
-        "service_hb9ad07",
-        "template_v0yyzmi",
+        "service_hb9ad07", // Your EmailJS service ID
+        "template_v0yyzmi", // Your EmailJS template ID
         {
           from_name: formData.name,
           from_email: formData.email,
           message: formData.message,
-          "g-recaptcha-response": recaptchaToken,
         },
-        "ZS-OUrEZCsqXuCb-p"
+        "ZS-OUrEZCsqXuCb-p" // Your EmailJS public key
       );
 
       setSubmitStatus("success");
-      setFormData({ name: "", email: "", message: "" });
-      // Reset reCAPTCHA
-      if (window.grecaptcha) {
-        window.grecaptcha.reset();
-      }
-      setRecaptchaToken(null);
+      setFormData({ name: "", email: "", message: "", lastName: "" });
     } catch (error) {
-      console.error("Email sending failed:", error);
+      console.error("Form submission failed:", error);
       setSubmitStatus("error");
     } finally {
       setIsSubmitting(false);
@@ -285,7 +249,7 @@ const ContactSection = () => {
       <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 md:px-8 w-full">
         <div className={`text-center ${SPACING.section.mb}`}>
           <TextElement
-            className={`inline-flex items-center ${BORDERS.radius.full} bg-gradient-to-r from-gray-100 to-blue-50 px-4 py-2 text-xs text-${COLORS.gray[600]} mb-14 tracking-wide border border-gray-200`}
+            className={`inline-flex items-center ${BORDERS.radius.full} bg-gradient-to-r from-gray-100 to-blue-50 px-4 py-2 text-xs ${COLORS.gray[600]} mb-14 tracking-wide border border-gray-200`}
           >
             <span className="relative flex h-1.5 w-1.5 mr-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
@@ -295,16 +259,11 @@ const ContactSection = () => {
           </TextElement>
 
           <TextElement className="animate-fade-in-up">
-  <h1
-    className="text-4xl md:text-5xl lg:text-6xl font-light text-gray-900 mb-6 tracking-tight"
-  >
-    Let&apos;s Start a{" "}
-    <span className="text-gray-900">
-      Conversation
-    </span>
-  </h1>
-</TextElement>
-
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-light text-gray-900 mb-6 tracking-tight">
+              Let&apos;s Start a{" "}
+              <span className="text-gray-900">Conversation</span>
+            </h1>
+          </TextElement>
 
           <TextElement className="animate-fade-in-up delay-100">
             <h2 className="text-2xl md:text-3xl lg:text-4xl font-light text-gray-900 mb-8 tracking-normal">
@@ -315,9 +274,7 @@ const ContactSection = () => {
           <LineReveal />
 
           <TextElement className="animate-fade-in-up delay-200">
-            <p
-              className="text-lg text-gray-600 max-w-2xl mx-auto mb-10 leading-relaxed font-light"
-            >
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-10 leading-relaxed font-light">
               Have a project in mind or want to discuss potential collaboration?
               I&apos;m always open to new opportunities and interesting
               challenges.
@@ -406,6 +363,21 @@ const ContactSection = () => {
                 )}
               </div>
 
+              {/* Honeypot field - hidden from humans but visible to bots */}
+              <div className="absolute left-[-9999px]" aria-hidden="true">
+                <label htmlFor="lastName">Last Name</label>
+                <input
+                  type="text"
+                  id="lastName"
+                  name="lastName"
+                  value={formData.lastName}
+                  onChange={handleChange}
+                  tabIndex="-1"
+                  autoComplete="off"
+                  placeholder="Your last name"
+                />
+              </div>
+
               <div>
                 <label
                   htmlFor="email"
@@ -466,14 +438,11 @@ const ContactSection = () => {
                 )}
               </div>
 
-              <div>
-                <div ref={recaptchaRef} className="g-recaptcha"></div>
-                {errors.recaptcha && (
-                  <p className="mt-1 text-sm text-red-600 animate-fade-in">
-                    {errors.recaptcha}
-                  </p>
-                )}
-              </div>
+              {errors.honeypot && (
+                <div className="p-4 bg-red-100 text-red-700 rounded-md text-sm">
+                  {errors.honeypot}
+                </div>
+              )}
 
               {submitStatus === "success" && (
                 <div
