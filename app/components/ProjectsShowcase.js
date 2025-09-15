@@ -26,7 +26,7 @@ const ProjectShowcase = () => {
       description:
         "A safe and educational environment for your children, guided by local professionals. Child care management software that makes families & teachers happier. Rawdhat manages Billing, Attendance, Registration, Communication, Paperwork, Payroll, and more for child care programs.",
       tech: ["React", "Next.js", "Tailwind", "Node.js"],
-      image: "/images/HadnatSite.PNG",
+      image: "/images/rawdhat.jpg",
       liveUrl: "https://rawdhat.com/en/home",
       githubUrl: "https://github.com/mzainDev/Day-Care-Center.git",
     },
