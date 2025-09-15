@@ -14,11 +14,16 @@ const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const mobileMenuRef = useRef(null);
+  const isScrollingRef = useRef(false);
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
-      setMobileMenuOpen(false);
+      
+      // Only close menu if not in the middle of a smooth scroll
+      if (!isScrollingRef.current) {
+        setMobileMenuOpen(false);
+      }
     };
 
     const handleClickOutside = (event) => {
@@ -43,18 +48,46 @@ const Header = () => {
     { name: 'Contact', href: '#contact' },
   ];
 
-  // Smooth scroll function
+  // Smooth scroll function with offset for header height
   const handleSmoothScroll = (e, href) => {
     e.preventDefault();
+    
+    // Set flag to indicate we're in a smooth scroll
+    isScrollingRef.current = true;
+    
     if (href === '#home') {
       // Scroll to very top
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
       const target = document.querySelector(href);
       if (target) {
-        target.scrollIntoView({ behavior: 'smooth' });
+        // Get the exact position of the target element
+        const targetRect = target.getBoundingClientRect();
+        const targetPosition = window.pageYOffset + targetRect.top;
+        
+        // Get header height
+        const header = document.querySelector('header');
+        const headerHeight = header ? header.offsetHeight : 80;
+        
+        // Scroll to the target position minus header height
+        window.scrollTo({
+          top: targetPosition - headerHeight,
+          behavior: 'smooth'
+        });
       }
     }
+    
+    // Close mobile menu after a short delay to allow scroll to complete
+    setTimeout(() => {
+      setMobileMenuOpen(false);
+      isScrollingRef.current = false;
+    }, 500);
+  };
+
+  // Direct scroll to top for logo
+  const scrollToTop = (e) => {
+    e.preventDefault();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     setMobileMenuOpen(false);
   };
 
@@ -79,7 +112,7 @@ const Header = () => {
           >
             <a
               href="#home"
-              onClick={(e) => handleSmoothScroll(e, '#home')}
+              onClick={scrollToTop}
               className={`text-2xl font-bold ${GRADIENTS.blue} bg-clip-text text-transparent`}
               aria-label="Home"
             >
@@ -141,7 +174,7 @@ const Header = () => {
                 <a
                   href={item.href}
                   onClick={(e) => handleSmoothScroll(e, item.href)}
-                  className={`block py-2 text-gray-700 hover:text-blue-600 font-medium ${ANIMATIONS.transitions.default} px-4`}
+                  className="block py-2 text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200 px-4"
                 >
                   {item.name}
                 </a>
