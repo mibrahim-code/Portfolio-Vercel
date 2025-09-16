@@ -1,271 +1,192 @@
-// app/components/HeroSection.js
 "use client";
 
-import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
-import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
-import {
-  COLORS,
-  TYPOGRAPHY,
-  SPACING,
-  BORDERS,
-  SHADOWS,
-  ANIMATIONS,
-  GRADIENTS,
-} from "../constants";
+import { motion, useInView } from "framer-motion";
+import Image from "next/image";
+import { useEffect, useRef } from "react";
 
-const HeroSection = () => {
-  const [isMounted, setIsMounted] = useState(false);
+const ParticleBackground = () => {
+  const canvasRef = useRef(null);
 
   useEffect(() => {
-    setIsMounted(true);
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    let w, h;
+    let animationFrame;
+
+    const resize = () => {
+      w = canvas.width = window.innerWidth;
+      h = canvas.height = window.innerHeight;
+    };
+    resize();
+    window.addEventListener("resize", resize);
+
+    let particles = Array.from({ length: 40 }).map(() => ({
+      x: Math.random() * w,
+      y: Math.random() * h,
+      dx: (Math.random() - 0.5) * 0.4,
+      dy: (Math.random() - 0.5) * 0.4,
+      r: Math.random() * 2 + 1,
+    }));
+
+    const draw = () => {
+      ctx.clearRect(0, 0, w, h);
+      ctx.fillStyle = "rgba(59,130,246,0.6)";
+
+      particles.forEach((p, i) => {
+        p.x += p.dx;
+        p.y += p.dy;
+        if (p.x < 0 || p.x > w) p.dx *= -1;
+        if (p.y < 0 || p.y > h) p.dy *= -1;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fill();
+
+        for (let j = i + 1; j < particles.length; j++) {
+          const q = particles[j];
+          const dist = Math.hypot(p.x - q.x, p.y - q.y);
+          if (dist < 100) {
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y);
+            ctx.lineTo(q.x, q.y);
+            ctx.strokeStyle = `rgba(147,197,253,${1 - dist / 100})`;
+            ctx.lineWidth = 0.5;
+            ctx.stroke();
+          }
+        }
+      });
+
+      animationFrame = requestAnimationFrame(draw);
+    };
+    draw();
+
+    return () => {
+      cancelAnimationFrame(animationFrame);
+      window.removeEventListener("resize", resize);
+    };
   }, []);
 
-  const TextElement = ({ children, delay = 0, className = "" }) => {
-    return (
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={isMounted ? { opacity: 1, y: 0 } : {}}
-        transition={{ duration: 0.7, delay, ease: [0.215, 0.61, 0.355, 1] }}
-        className={className}
-      >
-        {children}
-      </motion.div>
-    );
-  };
+  return <canvas ref={canvasRef} className="absolute inset-0 z-0" />;
+};
 
-  const LineReveal = ({ delay = 0 }) => {
-    return (
-      <motion.div
-        initial={{ width: 0 }}
-        animate={isMounted ? { width: "100%" } : {}}
-        transition={{ duration: 1.4, delay, ease: [0.215, 0.61, 0.355, 1] }}
-        className="h-0.5 bg-gradient-to-r from-transparent via-gray-300 to-transparent my-8 sm:my-12 w-32 sm:w-48 mx-auto"
-      />
-    );
-  };
-
-  const GridPattern = () => {
-    const circleData = [
-      { width: 67, height: 56, top: 37.53, left: 94.93 },
-      { width: 71, height: 71, top: 52.72, left: 49.28 },
-      { width: 90, height: 35, top: 13.14, left: 7.4 },
-      { width: 26, height: 73, top: 72.6, left: 20.06 },
-      { width: 58, height: 68, top: 56.08, left: 63.05 },
-      { width: 34, height: 74, top: 44.1, left: 23.54 },
-      { width: 85, height: 64, top: 32.52, left: 7.32 },
-      { width: 83, height: 41, top: 92.59, left: 52.02 },
-      { width: 47, height: 48, top: 92.53, left: 22.69 },
-      { width: 54, height: 33, top: 6.35, left: 78.82 },
-      { width: 37, height: 41, top: 87.41, left: 8.29 },
-      { width: 33, height: 61, top: 96.94, left: 75.73 },
-    ];
-
-    return (
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#fafafa_1px,transparent_1px),linear-gradient(to_bottom,#fafafa_1px,transparent_1px)] bg-[size:4rem_4rem] sm:bg-[size:6rem_6rem] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_40%,transparent_100%)] opacity-20" />
-
-        {circleData.map((data, i) => (
-          <motion.div
-            key={i}
-            className={`absolute ${BORDERS.radius.full} border border-${COLORS.gray[200]}`}
-            style={{
-              width: data.width,
-              height: data.height,
-              top: `${data.top}%`,
-              left: `${data.left}%`,
-            }}
-            animate={
-              isMounted
-                ? {
-                    scale: [1, 1.1, 1],
-                    opacity: [0.2, 0.4, 0.2],
-                  }
-                : {}
-            }
-            transition={{
-              duration: 8 + i * 0.5,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: i * 0.3,
-            }}
-          />
-        ))}
-      </div>
-    );
-  };
-
-  const AnimatedDots = () => {
-    return (
-      <div className="hidden md:flex absolute right-4 md:right-8 top-1/2 transform -translate-y-1/2 flex-col space-y-3 md:space-y-5">
-        {["home", "services", "projects", "contact"].map((item, i) => (
-          <motion.div
-            key={item}
-            className="flex items-center group"
-            initial={{ x: 20, opacity: 0 }}
-            animate={isMounted ? { x: 0, opacity: 1 } : {}}
-            transition={{ delay: 0.8 + i * 0.1, duration: 0.5 }}
-            whileHover={{ x: -8 }}
-          >
-            <motion.div
-              className={`w-1.5 h-1.5 ${BORDERS.radius.full} bg-${COLORS.gray[400]} mr-2 md:mr-3`}
-              animate={
-                isMounted
-                  ? {
-                      scale: [1, 1.4, 1],
-                      backgroundColor: [
-                        COLORS.gray[400],
-                        COLORS.gray[600],
-                        COLORS.gray[400],
-                      ],
-                    }
-                  : {}
-              }
-              transition={{
-                duration: 3,
-                repeat: Infinity,
-                delay: i * 0.3,
-              }}
-            />
-            <span
-              className={`text-xs text-${COLORS.gray[500]} opacity-0 group-hover:opacity-100 transition-opacity duration-300 tracking-wide hidden md:block`}
-            >
-              {item}
-            </span>
-          </motion.div>
-        ))}
-      </div>
-    );
-  };
-
-  const FloatingShapes = () => {
-    return (
-      <>
-        <motion.div
-          className={`absolute left-4 md:left-12 top-1/3 w-20 h-20 md:w-40 md:h-40 bg-${COLORS.white} border border-${COLORS.gray[100]} ${SHADOWS.sm} ${BORDERS.radius.md} transform rotate-3`}
-          initial={{ y: 40, opacity: 0, rotate: 0 }}
-          animate={isMounted ? { y: 0, opacity: 0.15, rotate: 3 } : {}}
-          transition={{ duration: 1.2, delay: 0.5 }}
-          whileHover={{ opacity: 0.25, transition: { duration: 0.3 } }}
-        />
-        <motion.div
-          className={`absolute right-4 md:right-16 bottom-1/4 w-24 h-16 md:w-48 md:h-32 bg-${COLORS.white} border border-${COLORS.gray[100]} ${SHADOWS.sm} ${BORDERS.radius.md} transform -rotate-2`}
-          initial={{ y: 40, opacity: 0, rotate: 0 }}
-          animate={isMounted ? { y: 0, opacity: 0.15, rotate: -2 } : {}}
-          transition={{ duration: 1.2, delay: 0.7 }}
-          whileHover={{ opacity: 0.25, transition: { duration: 0.3 } }}
-        />
-        <motion.div
-          className={`absolute left-1/4 bottom-1/3 w-12 h-12 md:w-24 md:h-24 bg-${COLORS.white} border border-${COLORS.gray[100]} ${SHADOWS.sm} ${BORDERS.radius.md} transform rotate-2`}
-          initial={{ y: 40, opacity: 0, rotate: 0 }}
-          animate={isMounted ? { y: 0, opacity: 0.1, rotate: 2 } : {}}
-          transition={{ duration: 1.2, delay: 0.9 }}
-          whileHover={{ opacity: 0.2, transition: { duration: 0.3 } }}
-        />
-      </>
-    );
-  };
+const HeroSection = () => {
+  const sectionRef = useRef(null);
+  const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
 
   return (
     <section
-      className={`relative min-h-screen flex items-center justify-center bg-${COLORS.white} overflow-hidden ${SPACING.section.py}`}
+      id="hero"
+      ref={sectionRef}
+      className="relative min-h-screen flex flex-col items-center justify-center bg-white overflow-hidden pt-16 md:pt-20 scroll-mt-20"
     >
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-64 h-64 sm:w-96 sm:h-96 bg-gradient-to-br from-blue-50 to-gray-50 rounded-full blur-2xl sm:blur-3xl opacity-20" />
-        <div className="absolute bottom-1/4 right-1/4 w-56 h-56 sm:w-80 sm:h-80 bg-gradient-to-tr from-gray-50 to-blue-50 rounded-full blur-2xl sm:blur-3xl opacity-20" />
-      </div>
+      {/* Background */}
+      <ParticleBackground />
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#fafafa_1px,transparent_1px),linear-gradient(to_bottom,#fafafa_1px,transparent_1px)] bg-[size:4rem_4rem] sm:bg-[size:6rem_6rem] opacity-20 pointer-events-none" />
 
-      <GridPattern />
-      <FloatingShapes />
-
-      <div className="relative z-10 max-w-3xl mx-auto px-4 md:px-8">
-        <div className="text-center">
-          <TextElement delay={0.1}>
-            <motion.div
-              className={`inline-flex items-center ${BORDERS.radius.full} bg-gradient-to-r from-gray-100 to-blue-50 px-4 py-2 text-xs text-${COLORS.gray[600]} mb-8 sm:mb-12 tracking-wide border border-gray-200`}
-              whileHover={{ y: -2 }}
-              transition={{ duration: 0.2 }}
-            >
-              <span className="relative flex h-1.5 w-1.5 mr-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-blue-500"></span>
-              </span>
-              CURRENTLY ACCEPTING NEW PROJECTS
-            </motion.div>
-          </TextElement>
-
-          <TextElement delay={0.2}>
-            <h1
-              className={`text-4xl md:text-5xl lg:text-6xl font-light text-${COLORS.gray[900]} mb-4 md:mb-6 tracking-tight`}
-            >
-              Elegant Digital Solutions
-            </h1>
-          </TextElement>
-
-          <TextElement delay={0.3}>
-            <motion.h2
-              className={`text-2xl md:text-3xl lg:text-4xl text-${COLORS.gray[900]} mb-6 md:mb-8 font-light tracking-normal`}
-              whileHover={{ scale: 1.005 }}
-              transition={{ duration: 0.3 }}
-            >
-              Crafted with Precision
-            </motion.h2>
-          </TextElement>
-
-          <LineReveal delay={0.4} />
-
-          <TextElement delay={0.5}>
-            <p
-              className={`text-lg text-${COLORS.gray[600]} max-w-2xl mx-auto mb-8 md:mb-10 leading-relaxed font-light`}
-            >
-              I design and develop sophisticated web applications and
-              cross-platform experiences that help businesses thrive.
-              Specializing in education, healthcare, and e-commerce solutions.
-            </p>
-          </TextElement>
-
-          <TextElement delay={0.6}>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-10 md:mt-14">
-              {/* Explore Work button - White text */}
-              <motion.a
-                href="/#projects"
-                whileHover={{
-                  y: -2,
-                  boxShadow: "0 8px 20px rgba(0, 0, 0, 0.12)",
-                }}
-                whileTap={{ scale: 0.985 }}
-                className={`px-6 py-3.5 bg-gradient-to-r from-gray-900 to-blue-900 text-white ${BORDERS.radius.xl} font-medium text-sm tracking-wider ${SHADOWS.md} hover:${SHADOWS.lg} ${ANIMATIONS.transitions.default} w-full sm:w-auto text-center`}
-              >
-                Explore Work
-              </motion.a>
-
-              {/* Start a Project button - Black text */}
-              <motion.a
-                href="/#contact"
-                whileHover={{ y: -2, backgroundColor: COLORS.gray[100] }}
-                whileTap={{ scale: 0.985 }}
-                className={`px-6 py-3.5 bg-${COLORS.white} border border-${COLORS.gray[200]} ${BORDERS.radius.xl} font-medium text-sm text-black tracking-wider hover:border-${COLORS.gray[300]} ${SHADOWS.sm} hover:${SHADOWS.md} ${ANIMATIONS.transitions.default} w-full sm:w-auto text-center`}
-              >
-                Start a Project
-              </motion.a>
-            </div>
-          </TextElement>
-        </div>
-      </div>
-
-      <AnimatedDots />
-
+      {/* Badge in center */}
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={isMounted ? { opacity: 1 } : {}}
-        transition={{ delay: 1.8 }}
-        className={`absolute left-4 md:left-8 bottom-4 md:bottom-8 text-xs text-${COLORS.gray[400]} tracking-widest`}
+        initial={{ opacity: 0, y: 30 }}
+        animate={isInView ? { opacity: 1, y: 0 } : {}}
+        transition={{ duration: 0.8 }}
+        className="inline-flex items-center rounded-full bg-gradient-to-r from-gray-100 to-blue-50 px-4 py-2 text-xs md:text-sm text-gray-600 mb-10 border border-gray-200 shadow-sm z-10"
       >
-        <div className="flex items-center">
-          <div className={`h-px w-6 md:w-8 bg-${COLORS.gray[300]} mr-2`}></div>
-          MIBRAHIM.CODE
-        </div>
+        <span className="relative flex h-1.5 w-1.5 mr-2">
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+          <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-blue-500"></span>
+        </span>
+        Accepting New Projects
       </motion.div>
+
+      {/* Content */}
+      <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-12 flex flex-col lg:flex-row items-center gap-12">
+        {/* Profile Image */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.85 }}
+          animate={isInView ? { opacity: 1, scale: 1 } : {}}
+          transition={{ duration: 0.8 }}
+          className="relative w-52 h-52 sm:w-72 sm:h-72 rounded-full overflow-hidden shadow-[0_20px_60px_rgba(59,130,246,0.5)] ring-4 ring-gray-200 hover:scale-105 transition-transform duration-500"
+        >
+          <Image
+            src="/images/profilepic.jpg"
+            alt="Muhammad Ibrahim"
+            fill
+            className="object-cover"
+            priority
+          />
+        </motion.div>
+
+        {/* Text + CTA */}
+        <div className="text-center lg:text-left space-y-6 max-w-2xl">
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.8 }}
+            className="text-4xl sm:text-5xl md:text-6xl font-light text-gray-900 tracking-tight"
+          >
+            Muhammad Ibrahim
+          </motion.h1>
+
+          <motion.p
+            initial={{ opacity: 0, y: 30 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.8, delay: 0.1 }}
+            className="text-lg sm:text-xl text-gray-600 leading-relaxed font-light"
+          >
+            Full-Stack Web Developer passionate about building clean, scalable,
+            and user-friendly applications. I love crafting modern digital
+            experiences with precision and creativity.
+          </motion.p>
+
+          {/* Skills */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="flex flex-wrap justify-center lg:justify-start gap-3"
+          >
+            {[
+              "Next.js",
+              "React",
+              "Node.js",
+              "Express",
+              "Sequelize",
+              "MySQL",
+              "Tailwind CSS",
+              "JavaScript",
+              "UI/UX",
+            ].map((skill, i) => (
+              <span
+                key={i}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-full border border-gray-200 hover:bg-blue-50 hover:border-blue-300 transition"
+              >
+                {skill}
+              </span>
+            ))}
+          </motion.div>
+
+          {/* Buttons */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            className="flex gap-4 justify-center lg:justify-start"
+          >
+            <a
+              href="#projects"
+              className="px-6 sm:px-8 py-3 bg-gradient-to-r from-gray-900 to-blue-900 text-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5"
+            >
+              View My Work
+            </a>
+            <a
+              href="#contact"
+              className="px-6 sm:px-8 py-3 border border-gray-200 text-gray-700 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-0.5"
+            >
+              Contact Me
+            </a>
+          </motion.div>
+        </div>
+      </div>
     </section>
   );
 };

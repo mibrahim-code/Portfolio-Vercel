@@ -19,41 +19,44 @@ const ProjectShowcase = () => {
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
 
-  const projects = useMemo(() => [
-    {
-      id: 1,
-      title: "Rawdhat's ChildCare Portal Website",
-      category: "Web Development",
-      description:
-        "A safe and educational environment for your children, guided by local professionals. Child care management software that makes families & teachers happier. Rawdhat manages Billing, Attendance, Registration, Communication, Paperwork, Payroll, and more for child care programs.",
-      tech: ["React", "Next.js", "Tailwind", "Node.js"],
-      image: "/images/rawdhat.jpg",
-      liveUrl: "https://rawdhat.com/en/home",
-      githubUrl: "https://github.com/mzainDev/Day-Care-Center.git",
-    },
-    {
-      id: 2,
-      title: "Arooj Cybersecurity & AI Solutions",
-      category: "Web Development",
-      description:
-        "A professional website built for a Saudi-based software house specializing in cybersecurity and AI solutions. Designed with a modern UI, service sections, testimonials, and blog integration to showcase their expertise.",
-      tech: ["Next.js", "Tailwind CSS", "Node.js"],
-      image: "/images/aroojsolution.jpg",
-      liveUrl: "https://hadnat.site/",
-      githubUrl: "https://github.com/mibrahim-code/Arooj-Solutions",
-    },
-    {
-      id: 3,
-      title: "Aura Fashion",
-      category: "E-Commerce",
-      description:
-        "A luxury fashion e-commerce experience with virtual try-on, AR viewing, and personalized styling recommendations.",
-      tech: ["Next.js", "Three.js", "Stripe", "MongoDB"],
-      image: "/images/placeholder-3.jpg",
-      liveUrl: "#",
-      githubUrl: "#",
-    },
-  ], []);
+  const projects = useMemo(
+    () => [
+      {
+        id: 1,
+        title: "Rawdhat's ChildCare Portal Website",
+        category: "Web Development",
+        description:
+          "A safe and educational environment for your children, guided by local professionals. Child care management software that makes families & teachers happier. Rawdhat manages Billing, Attendance, Registration, Communication, Paperwork, Payroll, and more for child care programs.",
+        tech: ["React", "Next.js", "Tailwind", "Node.js"],
+        image: "/images/rawdhat.jpg",
+        liveUrl: "https://rawdhat.com/en/home",
+        githubUrl: "https://github.com/mzainDev/Day-Care-Center.git",
+      },
+      {
+        id: 2,
+        title: "Arooj Cybersecurity & AI Solutions",
+        category: "Web Development",
+        description:
+          "A professional website built for a Saudi-based software house specializing in cybersecurity and AI solutions. Designed with a modern UI, service sections, testimonials, and blog integration to showcase their expertise.",
+        tech: ["Next.js", "Tailwind CSS", "Node.js"],
+        image: "/images/aroojsolution.jpg",
+        liveUrl: "https://hadnat.site/",
+        githubUrl: "https://github.com/mibrahim-code/Arooj-Solutions",
+      },
+      {
+        id: 3,
+        title: "esmnooservices",
+        category: "WordPress Website",
+        description:
+          "A professional one-page WordPress website designed for a video editor to showcase their portfolio and services. The site features a modern design with sections for highlighting video editing skills, client testimonials, and a contact form to generate new business opportunities.",
+        tech: ["WordPress", "Elementor", "CSS", "PHP"],
+        image: "/images/esmnooservices.jpg",
+        liveUrl: "#",
+        githubUrl: "#",
+      },
+    ],
+    []
+  );
 
   const ProjectCard = useCallback(({ project, index }) => {
     return (
@@ -162,7 +165,7 @@ const ProjectShowcase = () => {
             FEATURED WORK
           </motion.div>
 
-          <motion.h2 
+          <motion.h2
             initial={{ opacity: 0, y: 30 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.8, delay: 0.1 }}
@@ -171,14 +174,14 @@ const ProjectShowcase = () => {
             Crafting Digital Excellence
           </motion.h2>
 
-          <motion.div 
+          <motion.div
             initial={{ width: 0 }}
-            animate={isInView ? { width: '128px' } : {}}
+            animate={isInView ? { width: "128px" } : {}}
             transition={{ duration: 1.2, delay: 0.2 }}
             className="h-0.5 bg-gradient-to-r from-transparent via-gray-300 to-transparent mx-auto my-8 sm:my-12 sm:w-48"
           />
 
-          <motion.p 
+          <motion.p
             initial={{ opacity: 0, y: 30 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.8, delay: 0.3 }}

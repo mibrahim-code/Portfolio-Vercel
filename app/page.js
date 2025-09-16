@@ -5,6 +5,7 @@ import Services from "./components/Services";
 import ProjectsShowcase from "./components/ProjectsShowcase";
 import ContactSection from "./components/ContactSection";
 import Footer from "./components/Footer";
+import ClientReviews from "./components/ClientReviews";
 
 
 export default function Home() {
@@ -14,6 +15,7 @@ export default function Home() {
       <HeroSection/>
       <Services/>
       <ProjectsShowcase/>
+      <ClientReviews/>
       <ContactSection/>
       <Footer/>
       
